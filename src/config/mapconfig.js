@@ -123,6 +123,6 @@ let  drawKriging=function (extent) {
     }
 };
 //首次加载，自动渲染一次插值图
-let extent=clipgeom.getExtent();
-drawKriging(extent);
+let extent1=clipgeom.getExtent();
+drawKriging(extent1);
 export default mapconfig;
