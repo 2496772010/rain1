@@ -11,7 +11,7 @@ import kriging from '../config/kriging'
 import data from "../assets/data1.json"
 
 
-let mapconfig={}
+let mapconfig={};
 mapconfig.params = {
     mapCenter: [116.40, 39.90],
     krigingModel: 'exponential',//model还可选'gaussian','spherical'
@@ -91,11 +91,13 @@ let  drawKriging=function (extent) {
         values.push(feature.getProperties().value);
         lngs.push(feature.getGeometry().getCoordinates()[0]);
         lats.push(feature.getGeometry().getCoordinates()[1]);
-    })
+    });
 // console.log(values.length);
     if(values.length>3){
+        //1.多模型进行训练，返回一个variogram对象
         let  letiogram=kriging.train(values,lngs,lats,"exponential",0,226);
         let ex=clipgeom.getExtent();
+        //2.使用刚才的variogram对象使polygons描述的地理位置内的格网元素具备不一样的预测值；
         let grid=kriging.grid(coord,letiogram,(ex[2]-ex[0])/500);
         window.console.log(extent);
         mapconfig.canvasLayer=new ImageLayer({
@@ -110,6 +112,7 @@ let  drawKriging=function (extent) {
                     //设置canvas透明度
                     canvas.getContext('2d').globalAlpha = 0.75;
                     //使用分层设色渲染
+                        //3.将得到的格网渲染至canvas上
                     kriging.plot(canvas, grid,
                         [extent[0], extent[2]], [extent[1], extent[3]], mapconfig.params.colors);
                     return canvas;
@@ -118,7 +121,7 @@ let  drawKriging=function (extent) {
             })
         })
     }
-}
+};
 //首次加载，自动渲染一次插值图
 let extent=clipgeom.getExtent();
 drawKriging(extent);
